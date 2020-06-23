@@ -44,6 +44,8 @@ public class ExamenAlec extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         GridPane gridPane = new GridPane();
+        gridPane.setVgap(5);
+        gridPane.setHgap(5);
         Scene scene = new Scene(gridPane, 1000, 1000);
         stage.setScene(scene);
         stage.setTitle("Bestelling");
