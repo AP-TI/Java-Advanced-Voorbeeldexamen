@@ -74,7 +74,7 @@ public class Bestelling {
 
     private double duursteDrankje() {
         var ref = new Object() {
-            final double duurste = 0;
+            double duurste = 0;
         };
         drankjes.forEach((drank, aantal) -> {
             double prijs = drank.getPrijs() * aantal;
