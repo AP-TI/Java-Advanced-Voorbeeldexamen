@@ -1,10 +1,14 @@
 package be.apti.examenalec.models;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
-@Table(name="drank")
+@Table(name = "drank")
 public class Drank implements Comparable<Drank> {
+
     @Id
     @GeneratedValue
     private int id;
@@ -41,6 +45,8 @@ public class Drank implements Comparable<Drank> {
 
     @Override
     public int compareTo(Drank o) {
+        if (o == null) return 1;
+
         return Double.compare(o.getPrijs(), this.prijs);
     }
 

@@ -12,15 +12,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Entity
+@Table(name = "bestellingen")
 public class Bestelling {
     private static final double KORTING = 0.9;
+    private static final int KORTING_AANTAL = 10;
+    private static final int MAX_AANTAL = 150;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
+
     @ElementCollection(fetch = FetchType.EAGER)
     private Map<Drank, Integer> drankjes;
 
-    public Bestelling(){
+    public Bestelling() {
         drankjes = new HashMap<>();
     }
 
@@ -32,7 +37,11 @@ public class Bestelling {
         return drankjes;
     }
 
-    public List<String> getDranklijst(){
+    public void setDrankjes(Map<Drank, Integer> drankjes) {
+        this.drankjes = drankjes;
+    }
+
+    public List<String> getDranklijst() {
         List<String> result = new ArrayList<>();
         drankjes.forEach((drank, aantal) -> {
             result.add(drank + " - " + aantal);
@@ -45,14 +54,10 @@ public class Bestelling {
         drankjes.forEach((drank1, aantal1) -> {
             totaal.addAndGet(aantal1);
         });
-        if(totaal.get() + aantal > 150) throw new DrankjesLimietOverschredenException();
+        if (totaal.get() + aantal > MAX_AANTAL) throw new DrankjesLimietOverschredenException();
         drankjes.merge(drank, aantal, Integer::sum);
 
 
-    }
-
-    public void setDrankjes(Map<Drank, Integer> drankjes) {
-        this.drankjes = drankjes;
     }
 
     public long getId() {
@@ -64,12 +69,12 @@ public class Bestelling {
         drankjes.forEach((drank, aantal) -> {
             result.addAndGet(aantal);
         });
-        return result.get() >= 10;
+        return result.get() >= KORTING_AANTAL;
     }
 
     private double duursteDrankje() {
         var ref = new Object() {
-            double duurste = 0;
+            final double duurste = 0;
         };
         drankjes.forEach((drank, aantal) -> {
             double prijs = drank.getPrijs() * aantal;
@@ -81,7 +86,7 @@ public class Bestelling {
     public double getPrijs() {
         AtomicReference<Double> result = new AtomicReference<>((double) 0);
         drankjes.forEach((drank, hoeveelheid) -> {
-            result.updateAndGet(v -> (v + (!krijgtKorting() ? drank.getPrijs() : drank.getPrijs() * hoeveelheid == duursteDrankje() ? drank.getPrijs() * KORTING: drank.getPrijs()) * hoeveelheid));
+            result.updateAndGet(v -> (v + (!krijgtKorting() ? drank.getPrijs() : drank.getPrijs() * hoeveelheid == duursteDrankje() ? drank.getPrijs() * KORTING : drank.getPrijs()) * hoeveelheid));
         });
         return result.get();
     }
