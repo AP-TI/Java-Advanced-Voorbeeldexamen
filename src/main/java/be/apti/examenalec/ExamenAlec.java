@@ -5,11 +5,13 @@ import be.apti.examenalec.models.Bestelling;
 import be.apti.examenalec.models.Drank;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import org.hibernate.HibernateException;
@@ -77,6 +79,15 @@ public class ExamenAlec extends Application {
             listView.getItems().clear();
         });
 
+        Label labelBestelling = new Label();
+        ListView listViewBestellingInhoud = new ListView();
+
+
+        listViewBestellingen.setOnMouseClicked(mouseEvent -> {
+            Bestelling bestelling = (Bestelling)listViewBestellingen.getSelectionModel().getSelectedItems().get(0);
+            labelBestelling.setText(bestelling.toString());
+            listViewBestellingInhoud.setItems(FXCollections.observableArrayList(bestelling.getDranklijst()));
+        });
 
 
         invoer.add(comboBoxDrank, 0, 0);
@@ -89,7 +100,8 @@ public class ExamenAlec extends Application {
         gridPane.setAlignment(Pos.TOP_CENTER);
         GridPane.setMargin(invoer, new Insets(10));
         gridPane.add(invoer, 0, 0);
-
+        gridPane.add(labelBestelling, 1, 0);
+        gridPane.add(listViewBestellingInhoud, 1, 1);
 
         gridPane.add(listViewBestellingen, 0, 1);
     }
